@@ -1,0 +1,4 @@
+class EventType :
+    EARTHQUAKE = "EARTHQUAKE"
+    FLOOD = "FLOOD"
+    CYCLONE = "CYCLONE"
