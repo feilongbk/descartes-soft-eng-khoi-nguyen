@@ -37,7 +37,8 @@ def build_usgs_api_query_url(query_elements: dict, format: str = "csv"):
     for key in query_elements:
         value = query_elements[key]
         if isinstance(value, date) or isinstance(value, datetime) or isinstance(value, time):
-            value = value.strftime(USGS_DATETIME_FORMAT)
+            #value = value.strftime(USGS_DATETIME_FORMAT)
+            value = value.isoformat()
         result = f"{result}&{key}={value}"
     return result
 
