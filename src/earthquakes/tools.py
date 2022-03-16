@@ -40,7 +40,6 @@ def get_haversine_distance(latitude_list, longitude_list, center_latitude, cente
 
 
 
-
 def compute_payouts(earthquake_data: pandas.DataFrame, payout_structure:earthquake_policy.MultiAssetEarthquakePolicy) -> pandas.DataFrame:
 
     pass

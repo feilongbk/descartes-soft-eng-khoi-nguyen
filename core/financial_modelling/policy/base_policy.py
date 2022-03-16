@@ -1,5 +1,5 @@
 from core.financial_modelling.scenario.base_scenario import BaseScenario,BaseEventSeries
-from core.financial_modelling.scenario_payout.base_payout import BaseScenarioPayOut
+from core.financial_modelling.scenario_payout.base_scenario_payout import BaseScenarioPayOut
 class BasePolicy():
     def __init__(self):
         pass
