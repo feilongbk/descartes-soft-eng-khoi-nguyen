@@ -36,5 +36,6 @@ def create_table (delete_if_exists = False) :
     data_platform_helper.create_sql_table (table_name = TABLE_NAME, col_data_types = COLUMN_DATA_TYPES,
                                            primary_keys = PRIMARY_KEYS, delete_existing = delete_if_exists)
 
+
 if __name__ =="__main__":
     create_table()

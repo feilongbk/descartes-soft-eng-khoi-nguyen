@@ -48,5 +48,21 @@ def write_data_frame_to_db (df: pandas.DataFrame, table, schema, connection = No
     return df.to_sql (name = table, schema = schema, con = connection, if_exists = if_exists, index = False)
 
 
+def upsert_data_frame_to_db(df: pandas.DataFrame, table, schema, connection = None):
+    cols = tuple(list(df.columns))
+    tokens = tuple(["?" for col in cols])
+    cols = str(cols).replace("'","")
+    tokens = str(tokens).replace("'","")
+    query_form = f'''INSERT OR REPLACE INTO {table} {cols} VALUES {tokens}'''
+    print(query_form)
+    if connection is None :
+        with get_sqlalchemy_connection () as connection:
+            connection.executemany(query_form, df.values)
+            return connection.commit()
+    connection.executemany(query_form,df.values)
+    return connection.commit()
+
+
+
 if __name__ == '__main__' :
     create_connection ()

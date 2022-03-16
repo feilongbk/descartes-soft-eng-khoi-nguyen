@@ -113,6 +113,11 @@ def create_sql_table (table_name,
 def write_key_value(key,value,db_name):
         conn = get_data_platform_pickle_db_connection(db_name,True)
         conn.set(key,json_encode(value))
+def upsert_data_frame_to_db(df: pandas.DataFrame, table, db_name = DEFAULT_SQLITE_DB_NAME):
+    print(DEFAULT_SQLITE_DB_NAME)
+    return sqlite_helper.upsert_data_frame_to_db(df, table, None, connection =get_data_platform_sqlite_connection(db_name))
+
+
 
 def get_value_from_key(key,db_name):
     conn = get_data_platform_pickle_db_connection (db_name)
