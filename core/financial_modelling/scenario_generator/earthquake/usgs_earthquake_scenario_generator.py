@@ -14,7 +14,6 @@ class USGSEarthQuakeScenarioGenerator(base_scenario_generator.BaseScenarioGenera
         self.scenario_data = None
         self.earth_radius = earth_radius
         self.asset_locations = self.parameters[PolicyConstantString.asset_locations] ## iter of tuple: latitude, longitude
-
         self.max_radius_tolerance_ratio = 1.01
         layer_max_radius_list = [protection_layer[PolicyConstantString.max_radius] for protection_layer in self.parameters[PolicyConstantString.protection_layers]]
         self.max_radius = max(layer_max_radius_list)

@@ -1,3 +1,4 @@
+markupsafe
 pandas
 numpy
 ipykernel
@@ -7,3 +8,5 @@ asyncio
 aiohttp
 sqlalchemy
 pickleDB
+dash
+flask

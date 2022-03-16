@@ -15,7 +15,7 @@ LONGITUDE_COLUMN = "longitude"
 
 
 # POINT TO POINT
-def compute_haversine (latitude_1, longitude_1, latitude_2, longitude_2, radius) :
+def compute_haversine (latitude_1, longitude_1, latitude_2, longitude_2, radius) ->float:
     phi_1 = math.radians (latitude_1)
     phi_2 = math.radians (latitude_2)
     lambda_1 = math.radians (longitude_1)
@@ -27,17 +27,14 @@ def compute_haversine (latitude_1, longitude_1, latitude_2, longitude_2, radius)
     h = sin_half_delta_phi ** 2 + cos_latitude_1 * cos_latitude_2 * (sin_half_delta_lambda ** 2)
     return 2 * radius * math.asin (math.sqrt (h))
 
-
-def get_haversine_distance (latitude_list, longitude_list, center_latitude, center_longitude) :
+def get_haversine_distance (latitude_list, longitude_list, center_latitude, center_longitude) ->list:
     if not len (latitude_list) == len (longitude_list) :
         raise Exception (
             f"Latitude and Longitude must have the same size: {len (latitude_list)} vs {len (longitude_list)} ")
     result = list ()
     for lat, long in zip (latitude_list, longitude_list) :
-        print (lat, long)
         result.append (compute_haversine (lat, long, center_latitude, center_longitude, EARTH_RADIUS))
     return result
-
 
 def compute_payouts (
         earthquake_data: pandas.DataFrame, policy: earthquake_policy_module.MultiAssetEarthquakePolicy
@@ -50,11 +47,11 @@ def compute_payouts (
     scenario_generator = usgs_earthquake_scenario_generator.USGSEarthQuakeScenarioGenerator (
         parameters = scenario_parameters, earthquake_dataframe = earthquake_data)
     result = policy.compute_payout_multi_scenario (scenario_generator.get_data ())
-
     return result.apply (lambda x : x.scenario_payout)
 
-
-def compute_burning_cost (payouts: (dict, pandas.Series), start_year, end_year) :
+def compute_burning_cost (payouts: (dict, pandas.Series), start_year, end_year) ->float:
+    if len(payouts) == 0:
+        return 0.0
     if isinstance (payouts, dict) :
         payouts = pandas.Series (payouts)
     return ((payouts.index >= start_year) * (payouts.index <= end_year) * payouts).sum () / (end_year - start_year + 1)
