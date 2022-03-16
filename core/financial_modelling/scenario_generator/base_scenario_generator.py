@@ -1,6 +1,6 @@
 import pandas
 class BaseScenarioGenerator:
-    def __init__(self,parameters:dict,scenario_data:pandas.Series|dict=None):
+    def __init__(self,parameters:dict,scenario_data:(pandas.Series,dict)=None):
         self.parameters = parameters
         self.scenario_data = scenario_data
 
