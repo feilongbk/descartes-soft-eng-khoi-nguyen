@@ -49,6 +49,13 @@ def get_dataframe_from_query(query_url):
     df = pandas.read_csv(BytesIO(bytes))
     return df
 
+def count_data_from_query(query_url):
+    count_url = query_url.replace("query?","count?")
+    url_request = Request (count_url)
+    bytes = urlopen (url_request).read ()
+    #print(count_url)
+    return int(bytes)
+
 def get_earthquake_data_within_circle(
         latitude: float,
         longitude: float,
@@ -64,10 +71,7 @@ def get_earthquake_data_within_circle(
     query_elements[USGSQuery.maxradiuskm] = radius
 
     query_url = build_usgs_api_query_url(query_elements, format="csv")
-
     return get_dataframe_from_query(query_url)
-
-
 
 
 
@@ -81,3 +85,4 @@ if __name__ == "__main__":
     query_url = build_usgs_api_query_url(query_elements)
     df = get_dataframe_from_query(query_url)
     print(df)
+    print(count_data_from_query(query_url))

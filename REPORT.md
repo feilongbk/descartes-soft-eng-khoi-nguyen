@@ -19,16 +19,40 @@ The solution consists of 3 parts:
 
 ## SOLUTIONS
 ### A. Data Collecting
-#### O:
-There can be difference in the method of calculation of distance
-This can come from the choice of value of Earth average radius
-Or usage of approximation formula for faster calculation (especially for API involving search like USGS)
-The calculation errors are minored (generally <1%) when comparing to difference source
-However, we can be found in cases where distance computed by our formula is greater than distance calculated by USGS API, 
-#### The consequence is that some events located near max_radius that should be accounted in our simulation are excluded by USGS API
-#### This can be rare, but still can happen
-So it is safer to query max_radius with a tolerance of error, I use 1.01*max_radius in stead of max_radius when loading data for simulation
+#### OBSERVATION
+When comparing Haversine distance computed by the formula in Wikipedia and the ones computed by other ways (haversine 2.5.1, https://www.vcalc.com/wiki/vCalc/Haversine+-+Distance, etc.), I realized that the results are coherent. However there are still small differences.
+The reason might be difference in  choice of parameter (Earth average radius)  or the methods of calculation of distance (Some website and APIs might use approximated formulae of Haversine for faster response (It is not clear that USGS uses the same practices)).
+The calculation errors are minor (generally <1%) when comparing to difference source.
+The particular case, we can be found in cases where distance computed by our formula is greater than distance calculated by USGS API, 
+#### The consequence is that some events located near the boundary (max_radius) that should be accounted in our simulation could be excluded by USGS API
+#### This case can be rare, but still can happen
+So it is safer to query max_radius with a tolerance of error while collecting earthquake data for simulation, I use 1.01*max_radius in stead of max_radius when loading data for simulation.
+The request code consists of a generic query url builder, request and data formatting methods.
 
-### B.     
+### B. Financial Modelling
+Computing the payouts directly from a dataframe and policy term and conditions can be done easily and quickly. However, processing in this way makes it difficult to unit test, debug, or investigate when it comes to errors.
+I allow myself to present an idea of a financial modelling framework 
 
+So I break the modelling into different steps:
+(1) Scenario: in short, the event series that occur within a year/period/scenario. This abstraction enables integration of data from other sources than USGS as long as the data format is the same. Formatting data is done outside of the class Scenario (Inversion of Control)
+(2) The earthquake dataframe is reformatted by an instance of a (Base)ScenarioGenerator. Depending on the type of risk, and the dataformat, we implement different version of the data
+(3) The policy with its payout structure is modelled by a (Base)Policy object containing limit, event type, and "protection layers"
+In our case where protection layers are not linked, each protection layer (max_radius,payout_ratio,min_magnitude) independently compute raw loss on event series.
+The policy object will aggregate the loss over location, layer and event within a scenario to produce the payout of that scenario/year.
+(4) Finally, the Statistics Generator compute analysis (burning cost, VaR, loss distrubution, etc) from simulation result over all scenarii/years is 
+
+The simulation process can be describe by the schema below:
+(Analysis Metadata) 
+==> Data Provider/ Loader (from a local database or APIs ) ==> (USGS data frame) 
+==> Scenario Generator ==> (series of Scenario/ events per year) 
+==> Policy ==> (series of payout per year/scenario) 
+==> Stats Generator ==> (statistics and analysis for pricing and risk management)
+
+### C. Parallel Computing/Performance Optimization:
+Following the indications, 
+
+
+
+
+ 
 
