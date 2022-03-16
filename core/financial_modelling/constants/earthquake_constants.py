@@ -22,8 +22,14 @@ class DataConstantString:
     status = "status"
     locationSource = "locationSource"
     magSource = "magSource"
+    distance = "distance"
+    min_distance = "min_distance"
+    year = "year"
+    datetime = "datetime"
 
 class PolicyConstantString:
     asset_locations = "asset_locations"
     max_radius = "max_radius"
+    min_magnitude = "min_magnitude"
+    protection_layers = "protection_layers"
 
