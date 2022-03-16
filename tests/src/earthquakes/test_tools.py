@@ -1,4 +1,5 @@
 import pytest
+import numpy
 
 from src.earthquakes import tools
 import pandas
@@ -7,12 +8,17 @@ from datetime import datetime
 def test_haversine_distance():
     ## REFERENCE https://www.vcalc.com/wiki/vCalc/Haversine+-+Distance
     target_value = 314.4
-    assert pytest.approx(tools.compute_haversine(latitude_1=1, longitude_1=2, latitude_2=3, longitude_2=4,
-                                                 radius=tools.EARTH_RADIUS) - target_value, target_value*0.01) == 0.0
+    computed_value = tools.compute_haversine(latitude_1=1, longitude_1=2, latitude_2=3, longitude_2=4,
+                                                 radius=tools.EARTH_RADIUS)
+    print(computed_value,target_value,numpy.sign(computed_value-target_value))
+    assert pytest.approx( computed_value- target_value, target_value*0.01) == 0.0
+
 
     target_value = 2662.2
-    assert pytest.approx(tools.compute_haversine(latitude_1=50, longitude_1=60, latitude_2=70, longitude_2=80,
-                                                 radius=tools.EARTH_RADIUS) - target_value, target_value*0.01) == 0.0
+    computed_value = tools.compute_haversine(latitude_1=50, longitude_1=60, latitude_2=70, longitude_2=80,
+                                                 radius=tools.EARTH_RADIUS)
+    print(computed_value,target_value,numpy.sign(computed_value-target_value))
+    assert pytest.approx(computed_value - target_value, target_value*0.01) == 0.0
 
 def test_compute_payout():
 
@@ -49,9 +55,9 @@ def test_compute_payout():
                                                                     reporting_levels = reporting_levels)
     print (policy_1.__dict__)
 
-
+    radius_tolerance_ratio = 1.02
     earthquake_data = usgs_helper.get_earthquake_data_within_circle (latitude = 35.025, longitude = 25.763,
-                                                                     radius = 200, minimum_magnitude = 4.5,
+                                                                     radius = radius_tolerance_ratio, minimum_magnitude = 4.5,
                                                                      end_date = datetime (year = 2021, month = 12,
                                                                                           day = 31),
                                                                      start_date = datetime (year = 1921, month = 1,

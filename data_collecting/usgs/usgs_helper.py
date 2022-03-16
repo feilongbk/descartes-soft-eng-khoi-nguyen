@@ -67,6 +67,10 @@ def get_earthquake_data_within_circle(
 
     return get_dataframe_from_query(query_url)
 
+
+
+
+
 if __name__ == "__main__":
     # DIRTY BEHAVIOUR TEST
     query_elements = dict()

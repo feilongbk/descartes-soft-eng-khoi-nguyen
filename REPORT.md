@@ -15,4 +15,20 @@ C. Performance Optimization: Collecting large amount of earthquake data using as
 The solution consists of 3 parts:
 1. Fulfill the objectives of the test
 2. Study of the context and propose another strategy that could improve the solution presented in 1, from software engineering and system architecture point of view.
-3. Demonstration of the proposed strategy by a PoC
+3. Demonstration of the proposed strategy by a little PoC
+
+## SOLUTIONS
+### A. Data Collecting
+#### O:
+There can be difference in the method of calculation of distance
+This can come from the choice of value of Earth average radius
+Or usage of approximation formula for faster calculation (especially for API involving search like USGS)
+The calculation errors are minored (generally <1%) when comparing to difference source
+However, we can be found in cases where distance computed by our formula is greater than distance calculated by USGS API, 
+#### The consequence is that some events located near max_radius that should be accounted in our simulation are excluded by USGS API
+#### This can be rare, but still can happen
+So it is safer to query max_radius with a tolerance of error, I use 1.01*max_radius in stead of max_radius when loading data for simulation
+
+### B.     
+
+
