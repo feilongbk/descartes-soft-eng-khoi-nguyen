@@ -187,6 +187,12 @@ if __name__ == "__main__":
     print(layer_2.compute_payout(event_series, *asset_locations.values[0]))
     print(layer_3.compute_payout(event_series, *asset_locations.values[0]))
 
-    scenario = BaseScenario(scenario_id=1, event_data={event_type.EventType.EARTHQUAKE: event_series})
+    scenario_1 = BaseScenario(scenario_id=1, event_data={event_type.EventType.EARTHQUAKE: event_series})
+    scenario_2 = BaseScenario(scenario_id=2, event_data={event_type.EventType.EARTHQUAKE: event_series[:1]})
 
-    print(policy_1.compute_payout(scenario).__dict__)
+    print("--------Mono scenario test -------")
+    print(policy_1.compute_payout(scenario_1).__dict__)
+    print("--------Multi scenario test -------")
+    for scenario_analysis in policy_1.compute_payout_multi_scenario([scenario_1,scenario_2]):
+        print(scenario_analysis.__dict__)
+
