@@ -55,7 +55,6 @@ if __name__ == "__main__":
     query_elements[USGSQuery.minlatitude] = -90
     query_elements[USGSQuery.starttime] = date(year=2020, month=1, day=1)
     query_elements[USGSQuery.minmagnitude] = 6.0
-
     print(build_usgs_api_query_url(query_elements))
     query_url = build_usgs_api_query_url(query_elements)
     df = get_dataframe_from_query(query_url)
