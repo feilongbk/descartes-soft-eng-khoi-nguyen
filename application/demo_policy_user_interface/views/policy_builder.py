@@ -36,13 +36,11 @@ log_out = html.Div (className = "two columns",
                                                                                                   'Out', n_clicks = 0)])
 policy_parameter_elems = list ()
 
-POLICY_ID = html.Form ([html.H6 ("Policy ID", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
+POLICY_ID_NAME = html.Form ([html.H6 ("Policy ID", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
                         dcc.Input (id = "policy-id", type = "number", min = 1, step = 1,
-                                   style = { 'display' : 'inline-block', 'margin-right' : 20 })])
-policy_parameter_elems.append (POLICY_ID)
-POLICY_NAME = html.Form ([html.H6 ("Policy Name", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
+                                   style = { 'display' : 'inline-block', 'margin-right' : 20 }),html.H6 ("Policy Name", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
                           dcc.Input (id = "policy-name", type = "text")])
-policy_parameter_elems.append (POLICY_NAME)
+policy_parameter_elems.append (POLICY_ID_NAME)
 POLICY_TYPE = html.Form ([html.H6 ("Policy Type", style = {
     'display' : 'inline-grid', 'height' : '50%', 'width' : '15%', 'font-size' : "75%"
 }), dcc.Dropdown (id = "policy-type", options = ["Earthquake Multi Layer - Multi Location"], style = {'margin-right' : 20,
