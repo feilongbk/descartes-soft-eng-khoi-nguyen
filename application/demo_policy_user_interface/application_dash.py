@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 from flask_login import logout_user, current_user
 
 from application.demo_policy_user_interface.server import app
-from views import login_successful, login, login_failed, logout,policy_monitor,policy_builder,policy_analyzer
+from views import login_successful, login, login_failed, logout, policy_simulation
 
 header = html.Div (className = 'header',
     children = html.Div (className = 'container-width', style = { 'height' : '100%' },
@@ -36,23 +36,12 @@ def display_page (pathname) :
             return logout.layout
         else :
             return logout.layout
-    elif pathname == policy_monitor.ENDPOINT :
+    elif pathname == policy_simulation.ENDPOINT :
         if current_user.is_authenticated :
-            return policy_monitor.layout
+            return policy_simulation.layout
         else :
             return login_failed.layout
 
-    elif pathname == policy_builder.ENDPOINT :
-        if current_user.is_authenticated :
-            return policy_builder.layout
-        else :
-            return login_failed.layout
-
-    elif pathname == policy_analyzer.ENDPOINT :
-        if current_user.is_authenticated :
-            return policy_analyzer.layout
-        else :
-            return login_failed.layout
     else :
         return '404'
 

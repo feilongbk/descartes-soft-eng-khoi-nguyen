@@ -10,7 +10,7 @@ from application.demo_policy_user_interface.server import app
 
 warnings.filterwarnings ("ignore")
 
-ENDPOINT = "/policy-building"
+ENDPOINT = "/policy-simulation"
 pb_log_out = dcc.Location (id = 'pb_log_out', refresh = True)
 pb_policy_monitoring = dcc.Location (id = 'pb_policy_monitoring', refresh = True)
 pb_policy_building = dcc.Location (id = 'pb_policy_building', refresh = True)
@@ -19,13 +19,6 @@ pb_home_screen = dcc.Location (id = 'pb_home_screen', refresh = True)
 
 header = html.Header (children = html.H2 ('Policy Builder'))
 
-go_to_other_pages = html.Div (className = "row", children = [html.Div ("Other Interfaces"),
-                                                             html.Button (id = 'policy-monitoring-button',
-                                                                          children = 'Go to Policy Monitoring',
-                                                                          n_clicks = 0), html.Br (),
-                                                             html.Button (id = 'policy-analysis-button',
-                                                                          children = 'Go to Policy Analyzer',
-                                                                          n_clicks = 0)])
 home_screen = html.Div (className = "two columns", children = [html.Div ("Home Screen"),
                                                                html.Button (id = 'home-screen-button',
                                                                             children = 'Go to Home Screen',
@@ -37,14 +30,15 @@ log_out = html.Div (className = "two columns",
 policy_parameter_elems = list ()
 
 POLICY_ID_NAME = html.Form ([html.H6 ("Policy ID", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
-                        dcc.Input (id = "policy-id", type = "number", min = 1, step = 1,
-                                   style = { 'display' : 'inline-block', 'margin-right' : 20 }),html.H6 ("Policy Name", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
-                          dcc.Input (id = "policy-name", type = "text")])
+                             dcc.Input (id = "policy-id", type = "number", min = 1, step = 1,
+                                        style = { 'display' : 'inline-block', 'margin-right' : 20 }),
+                             html.H6 ("Policy Name", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
+                             dcc.Input (id = "policy-name", type = "text")])
 policy_parameter_elems.append (POLICY_ID_NAME)
 POLICY_TYPE = html.Form ([html.H6 ("Policy Type", style = {
     'display' : 'inline-grid', 'height' : '50%', 'width' : '15%', 'font-size' : "75%"
-}), dcc.Dropdown (id = "policy-type", options = ["Earthquake Multi Layer - Multi Location"], style = {'margin-right' : 20,
-    'display' : 'inline-grid', 'height' : '50%', 'width' : '80%', 'font-size' : "80%"
+}), dcc.Dropdown (id = "policy-type", options = ["Earthquake Multi Layer - Multi Location"], style = {
+    'margin-right' : 20, 'display' : 'inline-grid', 'height' : '50%', 'width' : '80%', 'font-size' : "80%"
 })])
 policy_parameter_elems.append (POLICY_TYPE)
 POLICY_LIMIT = html.Form ([html.H6 ("Limit", style = { 'display' : 'inline-grid', 'margin-right' : 20 }),
@@ -82,10 +76,8 @@ policy_parameter_elems.append (ASSET_LOCATIONS)
 
 @app.callback (Output ('protection-layer-container', 'children'),
                [Input ('add-protection-layer-button', 'n_clicks'), Input ({
-                                                                              "type" : "remove-protection-layer",
-                                                                              "index" : ALL
-                                                                          }, 'n_clicks')],
-               State ('protection-layer-container', 'children'))
+                   "type" : "remove-protection-layer", "index" : ALL
+               }, 'n_clicks')], State ('protection-layer-container', 'children'))
 def add_protection_layer (n_clicks, n_clicks_2, children) :
     ctx = dash.callback_context
     triggered_id = ctx.triggered[0]['prop_id'].split ('.')[0]
@@ -155,8 +147,8 @@ page_content = html.Div (className = "row", children = [page_content_header, htm
                                                                                        policy_parameter_elems)])
 
 layout = html.Div (
-    children = [pb_log_out, pb_home_screen, pb_policy_monitoring, pb_policy_building, pb_policy_analysis, header,
-                page_content, html.Br (), go_to_other_pages, home_screen, log_out])
+    children = [pb_log_out, pb_home_screen, header,
+                page_content, html.Br (), home_screen, log_out])
 
 
 @app.callback (Output ('pb_log_out', 'pathname'), [Input ('back-button', 'n_clicks')])
@@ -164,32 +156,6 @@ def logout_dashboard (n_clicks) :
     print ("back-button", n_clicks)
     if n_clicks > 0 :
         return '/'
-
-
-# Create callbacks
-@app.callback (Output ('pb_policy_monitoring', 'pathname'), [Input ('policy-monitoring-button', 'n_clicks')])
-def go_to_policy_monitoring (n_clicks) :
-    print ("policy-monitoring-button", n_clicks)
-    if n_clicks > 0 :
-        print ("Resu")
-        return '/policy-monitoring'
-
-
-# Create callbacks
-@app.callback (Output ('pb_policy_building', 'pathname'), [Input ('policy-building-button', 'n_clicks')])
-def go_to_policy_building (n_clicks) :
-    print ("policy-building-button", n_clicks)
-    if n_clicks > 0 :
-        return '/policy-building'
-
-
-# Create callbacks
-@app.callback (Output ('pb_policy_analysis', 'pathname'), [Input ('policy-analysis-button', 'n_clicks')])
-def go_to_policy_analysis (n_clicks) :
-    print ("policy-analysis-button", n_clicks)
-    if n_clicks > 0 :
-        return '/policy-analysis'
-
 
 # Create callbacks
 @app.callback (Output ('pb_home_screen', 'pathname'), [Input ('home-screen-button', 'n_clicks')])
