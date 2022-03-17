@@ -63,13 +63,11 @@ def collect_full_historical_data(magnitude_scheduler = HISTORICAL_MAGNITUDE_INTE
 
 
 
-
-
-
 if __name__ =="__main__":
     #collect_full_historical_data([4.0, 1000.0], longitude_step = 30.0)
     #data_df = collect_full_historical_data(HISTORICAL_MAGNITUDE_INTERVALS, longitude_step = 30.0)
-    data_df = collect_full_historical_data([4.0,4.01], longitude_step = 180.0)
+    data_df = collect_full_historical_data([4.0, 1000.0], longitude_step = 30.0)
+    #data_df = collect_full_historical_data([4.0,4.01], longitude_step = 180.0)
     result = data_platform_helper.upsert_data_frame_to_db(data_df, usgs_earthquake_helper.TABLE_NAME)
     print(result)
     #data_platform_helper.sqlite_helper.write_data_frame_to_db(data_df,usgs_earthquake_helper.TABLE_NAME,None,connection=data_platform_helper.get_data_platform_sqlite_connection())
