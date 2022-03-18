@@ -32,7 +32,11 @@ class USGSEarthQuakeScenarioGenerator(base_scenario_generator.BaseScenarioGenera
         earthquake_dataframe[DataConstantString.min_distance] = [self.compute_min_distance_to_asset_locations(earthquake_dataframe[DataConstantString.latitude][index_],earthquake_dataframe[DataConstantString.longitude][index_]) for index_ in earthquake_dataframe.index]
         earthquake_dataframe = earthquake_dataframe[earthquake_dataframe[DataConstantString.min_distance]<=self.max_radius*self.max_radius_tolerance_ratio]
         earthquake_dataframe.index = earthquake_dataframe[DataConstantString.id]
-        earthquake_dataframe[DataConstantString.datetime] = pandas.to_datetime(earthquake_dataframe[DataConstantString.time]).dt.tz_convert(tz = "UTC").dt.tz_localize(None)
+        earthquake_dataframe[DataConstantString.datetime] = pandas.to_datetime(earthquake_dataframe[DataConstantString.time])
+        try:
+            earthquake_dataframe[DataConstantString.datetime] = earthquake_dataframe[DataConstantString.datetime] .dt.tz_convert(tz = "UTC").dt.tz_localize(None)
+        except:
+            pass
         earthquake_dataframe[DataConstantString.year] = earthquake_dataframe[DataConstantString.datetime].apply(lambda  x:x.year)
         earthquake_dataframe.sort_values(by =[DataConstantString.datetime],inplace = True)
 

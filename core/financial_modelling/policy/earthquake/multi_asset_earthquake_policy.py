@@ -59,7 +59,7 @@ class EarthquakeProtectionLayer:
 
 class MultiAssetEarthquakePolicy(BasePolicy):
     def __init__(
-            self, policy_id, policy_name, asset_locations: pandas.DataFrame, limit: float, protection_layers: iter,
+            self, policy_id, policy_name, asset_locations: (pandas.DataFrame,list), limit: float, protection_layers: iter,
             inception_date: date = None, expiry_date: date = None, currency="USD", ignore_date=True,
             location_aggregation_rule="max", layer_aggregation_rule="max", event_aggregation_rule="max",
             reporting_levels: list = None
@@ -69,7 +69,7 @@ class MultiAssetEarthquakePolicy(BasePolicy):
         if isinstance(asset_locations, pandas.DataFrame):
             self.asset_locations = asset_locations.to_dict(orient="records")
         elif isinstance(asset_locations, list):
-            self.asset_locations = list(asset_locations)
+            self.asset_locations = list(asset_locations) ## list of dict
         self.inception_date = inception_date
         self.expiry_date = expiry_date
         self.limit = limit

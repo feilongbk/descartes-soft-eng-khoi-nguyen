@@ -2,6 +2,8 @@ import json
 import warnings
 
 import dash
+import dash_table
+import pandas
 # Dash configuration
 from dash import html, dcc
 from dash.dependencies import Input, Output, State, ALL
@@ -10,7 +12,10 @@ from application.demo_policy_user_interface.server import app
 
 warnings.filterwarnings("ignore")
 from nano_data_platform import data_platform_helper
-POLICY_DB = data_platform_helper.get_data_platform_pickle_db_connection(db_name="POLICY_METADATA.db")
+
+POLICY_DB = data_platform_helper.get_data_platform_pickle_db_connection(db_name="POLICY_METADATA.db", auto_dump=True)
+POLICY_PAYOUT_SIMULATION_DB = data_platform_helper.get_data_platform_pickle_db_connection(
+    db_name="POLICY_PAYOUT_SIMULATION.db", auto_dump=True)
 
 ENDPOINT = "/policy-simulation"
 pb_log_out = dcc.Location(id='pb_log_out', refresh=True)
@@ -30,10 +35,10 @@ log_out = html.Div(className="two columns",
                                                                                          'to Log '
                                                                                          'Out', n_clicks=0)])
 policy_parameter_elems = list()
-
-POLICY_ID_NAME = html.Form([html.H6("Policy ID", style={'display': 'inline-grid', 'margin-right': 20}),
-                            dcc.Input(id="policy-id", type="number", min=1, step=1,
-                                      style={'display': 'inline-block', 'margin-right': 20}),
+POLICY_ID_INPUT = dcc.Input(id="policy-id", type="number", min=1, step=1,
+                            style={'display': 'inline-block', 'margin-right': 20})
+POLICY_ID_NAME = html.Form([html.H6("Policy ID", style={'display': 'inline-grid', 'margin-right': 20}), POLICY_ID_INPUT
+                               ,
                             html.H6("Policy Name", style={'display': 'inline-grid', 'margin-right': 20}),
                             dcc.Input(id="policy-name", type="text")])
 policy_parameter_elems.append(POLICY_ID_NAME)
@@ -74,10 +79,11 @@ ASSET_LOCATIONS = html.Div([html.H6("Asset Locations", style={'display': 'inline
 policy_parameter_elems.append(ASSET_LOCATIONS)
 OVERWRITE = html.Form([html.H6("Overwrite if exists", style={
     'display': 'inline-grid', 'height': '50%', 'width': '15%', 'font-size': "75%"
-}), dcc.Dropdown(id="overwrite-metadata", options=["NO","YES"], style={
+}), dcc.Dropdown(id="overwrite-metadata", options=["NO", "YES"], style={
     'margin-right': 20, 'display': 'inline-grid', 'height': '50%', 'width': '50%', 'font-size': "80%"
 })])
 policy_parameter_elems.append(OVERWRITE)
+
 VALIDATE = html.Div(className="two columns", children=[
     html.H5("VALIDATE POLICY", style={'display': 'inline-grid', 'margin-right': 20, 'font-size': "100%"}),
     html.Button(id="validate-policy-button", children="Click to Validate", n_clicks=0,
@@ -91,10 +97,10 @@ policy_parameter_elems.append(VALIDATE)
 def parse_layers(elem_layers):
     result = list()
     for elem_layer in elem_layers:
-        layer_data= dict()
+        layer_data = dict()
         for child in elem_layer:
             if "max-radius" in str(child):
-                layer_data["radius"] = child['props']["value"]
+                layer_data["max_radius"] = child['props']["value"]
             if "payout-ratio" in str(child):
                 layer_data["payout_ratio"] = child['props']["value"]
             if "min-magnitude" in str(child):
@@ -102,10 +108,11 @@ def parse_layers(elem_layers):
         result.append(layer_data)
     return result
 
+
 def parse_locations(elem_locations):
     result = list()
     for elem_location in elem_locations:
-        location_data= dict()
+        location_data = dict()
         for child in elem_location:
             if "latitude" in str(child):
                 location_data["latitude"] = child['props']["value"]
@@ -116,52 +123,53 @@ def parse_locations(elem_locations):
     return result
 
 
-
-
 # Create callbacks
 @app.callback(Output('validation-message', 'children'),
               [Input('validate-policy-button', 'n_clicks'),
                State("policy-id", "value"), State("policy-name", "value"),
-               State("policy-type", "value"), State("policy-limit", "value"),State("policy-currency", "value"),
+               State("policy-type", "value"), State("policy-limit", "value"), State("policy-currency", "value"),
                State("policy-inception", "date"), State("policy-expiry", "date"),
                State({
-                  "type": "layer-parameters", "index": ALL
-              }, "children"),               State({
+                   "type": "layer-parameters", "index": ALL
+               }, "children"), State({
                   "type": "location-parameters", "index": ALL
-              }, "children"),State("overwrite-metadata", "option")
+              }, "children"), State("overwrite-metadata", "value")
 
                ])
-def validate_policy(n_clicks, policy_id, policy_name,policy_type,policy_limit,currency,inception,expiry,elem_layers,elem_locations,overwrite_metadata):
-    print("policy-analysis-button", policy_id, policy_name,policy_type,policy_limit,inception,expiry,elem_layers,elem_locations)
-    print(parse_layers(elem_layers))
-    layers =parse_layers(elem_layers)
-    print(parse_locations(elem_locations))
-    locations =parse_layers(elem_locations)
+def validate_policy(n_clicks, policy_id, policy_name, policy_type, policy_limit, currency, inception, expiry,
+                    elem_layers, elem_locations, overwrite_metadata):
+    print("policy-analysis-button", policy_id, policy_name, policy_type, policy_limit, inception, expiry, elem_layers,
+          elem_locations)
+
+    layers = parse_layers(elem_layers)
+    locations = parse_locations(elem_locations)
     overwrite = overwrite_metadata == "YES"
+
     if n_clicks > 0:
-        param_to_check = [policy_id, policy_name,policy_type,policy_limit,inception,expiry]
-        if  None in param_to_check:
+        param_to_check = [policy_id, policy_name, policy_type, policy_limit, inception, expiry]
+        if None in param_to_check:
             return f'''Enter missing parameters'''
-        if  len(layers) == 0:
+        if len(layers) == 0:
             return f'''Enter at least 1 layer'''
-        if  len(locations) == 0:
+        if len(locations) == 0:
             return f'''Enter at least 1 location'''
 
-
         policy_parameters = dict()
-        policy_parameters["id"] = policy_id
+        policy_parameters["policy_id"] = policy_id
         policy_parameters["name"] = policy_name
         policy_parameters["type"] = policy_type
         policy_parameters["limit"] = policy_limit
         policy_parameters["currency"] = currency
         policy_parameters["inception"] = inception
         policy_parameters["expiry"] = expiry
-        policy_parameters["pretection_layers"] = layers
+        policy_parameters["protection_layers"] = layers
         policy_parameters["asset_locations"] = locations
+        print(policy_parameters)
         if POLICY_DB.get(str(policy_id)) and not overwrite:
             print(POLICY_DB.get(str(policy_id)))
             return f'''The policy ID {policy_id} already saved. Please change the policy ID to ensure the uniqueness.'''
-        POLICY_DB.set(str(policy_id),policy_parameters)
+        POLICY_DB.set(str(policy_id), policy_parameters)
+        POLICY_DB.dump()
         return "Validated"
 
 
@@ -234,11 +242,77 @@ def add_asset_location(n_clicks, n_clicks_2, children):
     return children
 
 
+#### SIMULATION PARAMETERS
+
+def format_dataframe(df):
+    new_df = df.copy()
+    new_df.columns = [str(x).upper() for x in new_df.columns]
+    for col in new_df.columns:
+        if new_df[col].dtype == "object":
+            new_df[col] = new_df[col].apply(str)
+    columns = [{'name': col, 'id': col} for col in new_df.columns]
+    data = new_df.to_dict(orient='records')
+    return dash_table.DataTable(columns=columns, data=data)
+
+
+simulation_parameter_elems = list()
+
+SIMULATE = html.Div(className="two columns", children=[
+    html.H5("RUN SIMULATION", style={'display': 'inline-grid', 'margin-right': 20, 'font-size': "100%"}),
+    html.Button(id="simulate-policy-button", children="Click to Simulate", n_clicks=0,
+                style={'display': 'inline-grid', 'margin-right': 20, 'height': '100%', 'width': '50%',
+                       'font-size': "100%"})
+])
+simulation_parameter_elems.append(SIMULATE)
+simulation_parameter_elems.append(
+    html.Div(id="simulation-message", style={'display': 'inline-grid', 'margin-right': 20}))
+
+
+@app.callback(Output('simulation-message', 'children'),
+              [Input('simulate-policy-button', 'n_clicks'), State("policy-id", "value")])
+def run_simulation(n_clicks, policy_id):
+    print("SIMULATE", n_clicks)
+    if n_clicks > 0:
+        policy_parameters = POLICY_DB.get(str(policy_id))
+        print(policy_parameters)
+        if not policy_parameters:
+            return "Create the policy first"
+        cloned_policy_parameters = dict(policy_parameters)
+        locations = cloned_policy_parameters.get("asset_locations")
+        layers = cloned_policy_parameters.get("protection_layers")
+        layers.sort(key=lambda x: x["payout_ratio"])
+        locations.sort(key=lambda x: x["longitude"])
+        print(policy_parameters)
+        print(layers)
+        print(locations)
+
+        children = []
+
+
+        children.append(format_dataframe(pandas.DataFrame([cloned_policy_parameters])))
+        children.append(format_dataframe(pandas.DataFrame(layers)))
+        children.append(format_dataframe(pandas.DataFrame(locations)))
+        ## SIMULATION ##
+        from application.demo_policy_user_interface import utils
+        result = utils.simulate_earthquake(policy_parameters, layers, locations)
+        print(result)
+        POLICY_PAYOUT_SIMULATION_DB.set(str(policy_id), result.to_dict())
+        VISU = dcc.Graph( figure=px.bar(x=result.index,y=result.values))
+        children.append(VISU)
+        children.append(html.Div("Done"))
+        return children
+
+#### VISULAIZATION / STATS
+
+import plotly.express as px
+
+
+
 page_content_header = html.Div("Enter Policy Terms And Conditions")
 
 page_content = html.Div(className="row", children=[page_content_header, html.Div(className="row",
                                                                                  children=
-                                                                                 policy_parameter_elems)])
+                                                                                 policy_parameter_elems + simulation_parameter_elems)])
 
 layout = html.Div(
     children=[pb_log_out, pb_home_screen, header,

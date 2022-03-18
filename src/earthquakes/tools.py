@@ -47,6 +47,7 @@ def compute_payouts (
     scenario_generator = usgs_earthquake_scenario_generator.USGSEarthQuakeScenarioGenerator (
         parameters = scenario_parameters, earthquake_dataframe = earthquake_data)
     result = policy.compute_payout_multi_scenario (scenario_generator.get_data ())
+    print(result)
     return result.apply (lambda x : x.scenario_payout)
 
 def compute_burning_cost (payouts: (dict, pandas.Series), start_year, end_year) ->float:

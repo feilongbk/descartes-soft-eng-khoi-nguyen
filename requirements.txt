@@ -12,3 +12,4 @@ dash
 flask
 flask-login
 Flask-SQLAlchemy
+tabulate
