@@ -119,7 +119,7 @@ As the historical dataset is large, I have to split the query by intervals of lo
 limiting only to significant events (for example magnitude > 4.0 for this test). At my estimation, downloading full
 history could take up to 2 days. However the duration for weekly/daily update is several minutes. In short, centralizing
 data from different sources into a datastore is a common practice, but I do not know if it suits the context of
-Descartes, or if you have already another solution in place.
+Descartes, or if you have already another solution in production context.
 
 
 #### The implementation of the historical data collecting code can be found in data_collecting.usgs
