@@ -1,6 +1,6 @@
 import pytest
 import numpy
-
+import add_to_path
 from src.earthquakes import tools
 import pandas
 from data_collecting.usgs import usgs_helper
@@ -55,9 +55,10 @@ def test_compute_payout():
                                                                     reporting_levels = reporting_levels)
     print (policy_1.__dict__)
 
-    radius_tolerance_ratio = 1.02
+    radius_tolerance_ratio = 1.01
+    max_radius = max([x.max_radius for x in protection_layers])
     earthquake_data = usgs_helper.get_earthquake_data_within_circle (latitude = 35.025, longitude = 25.763,
-                                                                     radius = radius_tolerance_ratio, minimum_magnitude = 4.5,
+                                                                     radius = radius_tolerance_ratio*max_radius, minimum_magnitude = 4.5,
                                                                      end_date = datetime (year = 2021, month = 12,
                                                                                           day = 31),
                                                                      start_date = datetime (year = 1921, month = 1,

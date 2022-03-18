@@ -91,7 +91,7 @@ def get_earthquake_data(
         end_date=end_date,start_date=start_date)
     return get_dataframe_from_query(query_url)
 
-
+import asyncio
 
 async def get_earthquake_data_async_multi_location(asset_locations, radius,minimum_magnitude,end_date,start_date = datetime(1900,1,1)):
         result = list ()
@@ -107,7 +107,7 @@ async def get_earthquake_data_async_multi_location(asset_locations, radius,minim
                         result.append(df)
         result = pandas.concat(result,axis = 0,ignore_index = True)
         format_output(result)
-
+        loop = asyncio.new_event_loop()
         return result
 
 def get_earthquake_data_for_multiple_locations(asset_locations, radius,minimum_magnitude,end_date,start_date = datetime(1900,1,1)):

@@ -37,6 +37,7 @@ def simulate_earthquake(policy_parameters: dict, layers: list, locations: list):
                                                                           end_date=datetime.utcnow())
     print(len(earthquake_data))
     payouts = tools.compute_payouts(earthquake_data, policy)
+    ### CHECK DATA INTEGRITY
     payouts.event_data = earthquake_data
     return payouts
 from app_database_driver import *

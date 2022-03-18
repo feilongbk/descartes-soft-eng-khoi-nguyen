@@ -14,3 +14,4 @@ flask-login
 Flask-SQLAlchemy
 tabulate
 joblib
+nest_asyncio

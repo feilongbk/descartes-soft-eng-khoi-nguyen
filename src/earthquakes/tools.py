@@ -39,6 +39,7 @@ def get_haversine_distance (latitude_list, longitude_list, center_latitude, cent
 def compute_payouts (
         earthquake_data: pandas.DataFrame, policy: earthquake_policy_module.MultiAssetEarthquakePolicy
 ) -> pandas.Series :
+    print(earthquake_data)
     scenario_parameters = dict ()
     scenario_parameters[PolicyConstantString.asset_locations] = policy.asset_locations
     scenario_parameters[PolicyConstantString.protection_layers] = [
