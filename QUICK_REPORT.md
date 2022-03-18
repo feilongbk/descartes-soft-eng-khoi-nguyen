@@ -47,9 +47,8 @@ query url builder, request and data formatting methods.
 #### OBSERVATION
 
 A simple way is directly calculating the payout from the dataframe using Haversine distance and aggregation functions of
-numpy and pandas. However, I want to try another way of design and implementation (similar to a solution we used at SCOR
-P&C for Nat Cat reinsurance contracts and portfolios). Maybe Descartes has already a similar or better financial
-modelling framework, but it is still interesting to test if this design works for index-based policy.
+numpy and pandas. However, I want to try another way of design and implementation (similar to framework we used at SCOR
+P&C for Nat Cat treaties and portfolios). Maybe Descartes has already a similar or better framework, but it is still interesting to test if this design works for index-based policy.
 
 We can break the simulation of payout of a policy into different elementary steps:
 (1) Scenario: in short, the event series that occur within a year/period/scenario. This abstraction enables integration
@@ -111,7 +110,7 @@ Beside that, there are several problems with the USGS API.
 2. USGS has, apparently, a mechanism to prevent abusive usage of their API (slow down or temporary block requests from specific
    IPs). That might explain why some requests might take much time. (Usage of distance in the query might be another
    reason)
-3. When the network connection is unstable, directly getting data from public API is not a good choice, especially for simulation of large portfolio of policies/contracts (in the reinsurance case, a portfolio can contain many thousands contracts/treaties, I do not know the typical number of policies in the case of index-based insurance)
+3. When the network connection is unstable, directly getting data from public API is not a good choice, especially for simulation of large portfolio of policies/contracts.
 
 ####So by curiosity I have also tried to study another data providing strategy, that is collecting the historical data and store in a database, and run an automated process to update events and modifications at USGS on a daily basis (using a parameters named updatedafter). In the simulation we will request from the local database/ or an in-house data API.
 
@@ -122,13 +121,14 @@ history could take up to 2 days. However the duration for weekly/daily update is
 data from different sources into a datastore is a common practice, but I do not know if it suits the context of
 Descartes, or if you have already another solution in place.
 
+
 #### The implementation of the historical data collecting code can be found in data_collecting.usgs
 
 #### The local data store codes can be found in nano_data_platform: with relational_data_store for tabular and relational data based SQLite, a lightweight SQL database, key_value_datastore for NoSQL data, which used pickleDB, a lightweight database similar to Redis, and a flat_file_datastore for large data
+#### I have also tried to build a simulation app with DASH for builing and simulation of policy and deployed it on Google Cloud. You can access the application with the credentials (user_001,password_001). The application is available for several weeks.
+at the URL: http://35.198.191.123:2022
 
-#### Of course, the lightweight DBs do not suit professional purposes (but their industrial alternatives will). However, this can be considered as a quick proof of concept of how a robust IT platform could be built (better control and scalability by modularizing the A-Z process into smaller parts like data collecting, data preprocessing,simulation, reporting, monitoring, etc.)
 
-### Please feel free to share with me your remarks and/or suggestions. Thank you in advance.
 
 
 

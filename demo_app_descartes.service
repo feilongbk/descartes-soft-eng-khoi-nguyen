@@ -9,6 +9,6 @@ After=network-online.target
 Type=simple
 User=philippe3
 Restart=on-failure
-WorkingDirectory=/home/feilongbk/Projects/descartes_underwriting_technical_test
+WorkingDirectory=/home/confession_sinhvien_vn_fr/Projects/descartes_underwriting_technical_test
 ExecStart=/bin/bash demo_app_launcher.sh
 RestartSec=1000ms
