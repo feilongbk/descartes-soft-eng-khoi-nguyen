@@ -1,3 +1,4 @@
+source setup_python_3.sh
 cd /home/confession_sinhvien_vn_fr/VENV3
 virtualenv -p /usr/bin/python3 descartes_underwriting_technical_test
 source descartes_underwriting_technical_test/bin/activate
