@@ -13,3 +13,4 @@ flask
 flask-login
 Flask-SQLAlchemy
 tabulate
+joblib

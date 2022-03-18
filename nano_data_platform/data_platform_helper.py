@@ -1,5 +1,5 @@
 import os
-
+import joblib
 DIR_PATH = os.path.dirname (os.path.realpath (__file__)).replace ("\\", "/")
 DATA_ROOT_DIR = DIR_PATH + "/data"
 from common_utils.database_utils import sqlite_helper
@@ -82,6 +82,14 @@ def get_data_platform_pickle_path (db_name) :
     result = get_data_platform_pickle_db_dir () + "/" + db_name
     return result
 
+def get_data_platform_flat_file_dir_path(db_name):
+    result = get_data_platform_pickle_db_dir () + "/" + db_name
+    try:
+        os.makedirs(result)
+    except:
+        pass
+    return result
+
 
 def get_data_platform_sqlite_connection (db_name = DEFAULT_SQLITE_DB_NAME) :
     return sqlite_helper.create_connection (get_data_platform_sqlite_dir () + "/" + db_name)
@@ -90,6 +98,11 @@ def get_data_platform_sqlite_connection (db_name = DEFAULT_SQLITE_DB_NAME) :
 def get_data_platform_pickle_db_connection (db_name = DEFAULT_SQLITE_DB_NAME, auto_dump = False) :
     return pickledb_helper.create_connection (get_data_platform_pickle_db_dir () + "/" + db_name, auto_dump = auto_dump)
 
+def dump_object_to_flat_file(object,key,db_name):
+    joblib.dump(object,get_data_platform_flat_file_dir_path(db_name)+f"/{key}.joblib")
+
+def load_object_to_flat_file(key,db_name):
+    return joblib.load(get_data_platform_flat_file_dir_path(db_name)+f"/{key}.joblib")
 
 def execute_query_sqlite (query, connection = None) :
     if connection is None :

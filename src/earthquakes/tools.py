@@ -48,7 +48,9 @@ def compute_payouts (
         parameters = scenario_parameters, earthquake_dataframe = earthquake_data)
     result = policy.compute_payout_multi_scenario (scenario_generator.get_data ())
     print(result)
-    return result.apply (lambda x : x.scenario_payout)
+    payout_series = result.apply (lambda x : x.scenario_payout)
+    payout_series.detailed_analysis = result
+    return payout_series
 
 def compute_burning_cost (payouts: (dict, pandas.Series), start_year, end_year) ->float:
     if len(payouts) == 0:
@@ -105,5 +107,7 @@ if __name__ == "__main__" :
                                                                                             day = 1))
     payouts = compute_payouts (earthquake_data, policy_1)
     print (payouts)
+    print (payouts.detailed_analysis)
     print (compute_burning_cost (payouts, 1950, 2021))
     print (compute_burning_cost (payouts, 1990, 2021))
+

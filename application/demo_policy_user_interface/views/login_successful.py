@@ -25,14 +25,21 @@ log_out_element = html.Div (className = "container", children = [html.Div (child
 
 policy_simulation_element = html.Div (className = "container", children = [html.Div (children = [
     html.Div (className = "row", children = [
-        html.Div (className = "ten columns", children = [html.Br (), html.Div ('Policy Simulator'), ]),
+        html.Div (className = "ten columns", children = [html.Br (), html.Div ('Policy Builder'), ]),
         html.Div (className = "ten columns", children = [html.Br (), html.Button (id = 'policy-simulation-button',
-                                                                                  children = 'Go to Policy Simulator',
+                                                                                  children = 'Go to Policy Builder',
+                                                                                  n_clicks = 0)])])])])
+
+policy_analysis_screen_element = html.Div (className = "container", children = [html.Div (children = [
+    html.Div (className = "row", children = [
+        html.Div (className = "ten columns", children = [html.Br (), html.Div ('Policy Analysis Result'), ]),
+        html.Div (className = "ten columns", children = [html.Br (), html.Button (id = 'analysis-result-viewer-button',
+                                                                                  children = 'Go to Analysis Result',
                                                                                   n_clicks = 0)])])])])
 
 layout = html.Div (
     children = [hs_log_out, hs_policy_monitoring,hs_policy_simulation,hs_policy_analysis, header,
-                policy_simulation_element,
+                policy_simulation_element,policy_analysis_screen_element,
                 log_out_element])
 
 
@@ -51,4 +58,11 @@ def go_to_policy_simulation (n_clicks) :
     print ("policy-simulation-button", n_clicks)
     if n_clicks > 0 :
         return '/policy-simulation'
+
+# Create callbacks
+@app.callback (Output ('hs_policy_analysis', 'pathname'), [Input ('analysis-result-viewer-button', 'n_clicks')])
+def go_to_policy_simulation (n_clicks) :
+    print ("policy-simulation-button", n_clicks)
+    if n_clicks > 0 :
+        return '/analysis-result'
 
