@@ -7,7 +7,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=philippe3
+User=confession_sinhvien_vn_fr
 Restart=on-failure
 WorkingDirectory=/home/confession_sinhvien_vn_fr/Projects/descartes_underwriting_technical_test
 ExecStart=source demo_app_launcher.sh
