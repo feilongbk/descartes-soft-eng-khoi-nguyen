@@ -1,8 +1,15 @@
 import warnings
 
+import dash_table
+import pandas
+import plotly.io as pio
+
+from application.demo_policy_user_interface import utils
+
+pio.renderers.default = 'browser'
 # Dash configuration
 from dash import html, dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 from application.demo_policy_user_interface.server import app
 
@@ -52,7 +59,7 @@ DISPLAY = html.Div(className="two columns", children=[
 ])
 display_elements.append(DISPLAY)
 display_elements.append(
-    html.Div(id="simulation-message", style={'display': 'inline-grid', 'margin-right': 20}))
+    html.Div(id="display-message", style={'display': 'inline-grid', 'margin-right': 20}))
 
 POLICY_ID_NAME = html.Form(
     [html.H6("Policy ID", style={'display': 'inline-grid', 'margin-right': 20}), POLICY_ID_INPUT])
@@ -60,35 +67,80 @@ POLICY_ID_NAME = html.Form(
 policy_parameter_elems.append(POLICY_ID_NAME)
 
 
-def parse_layers(elem_layers):
-    result = list()
-    for elem_layer in elem_layers:
-        layer_data = dict()
-        for child in elem_layer:
-            if "max-radius" in str(child):
-                layer_data["max_radius"] = child['props']["value"]
-            if "payout-ratio" in str(child):
-                layer_data["payout_ratio"] = child['props']["value"]
-            if "min-magnitude" in str(child):
-                layer_data["min_magnitude"] = child['props']["value"]
-        result.append(layer_data)
-    return result
+def format_dataframe(df):
+    new_df = df.copy()
+    new_df.columns = [str(x).upper() for x in new_df.columns]
+    for col in new_df.columns:
+        if new_df[col].dtype == "object":
+            new_df[col] = new_df[col].apply(str)
+    columns = [{'name': col, 'id': col} for col in new_df.columns]
+    data = new_df.to_dict(orient='records')
+    return dash_table.DataTable(columns=columns, data=data)
 
 
-def parse_locations(elem_locations):
-    result = list()
-    for elem_location in elem_locations:
-        location_data = dict()
-        for child in elem_location:
-            if "latitude" in str(child):
-                location_data["latitude"] = child['props']["value"]
-            if "longitude" in str(child):
-                location_data["longitude"] = child['props']["value"]
-        result.append(location_data)
-    return result
+from plotly import express as px
 
 
 #### VISULAIZATION / STATS
+def display_yearly_payout(payout_object):
+    return px.bar(x=payout_object.index, y=payout_object.values)
+
+
+def display_payout_histogram(payout_object):
+    return px.histogram(x=payout_object.values, nbins=101, histnorm='probability density')
+
+
+def display_burning_cost(payout_object):
+    burning_cost_series = {start_year: utils.tools.compute_burning_cost(payout_object, start_year, 2021) for start_year
+                           in range(1911, 2022)}
+    burning_cost_series = pandas.Series(burning_cost_series)
+    return px.line(x=burning_cost_series.index, y=burning_cost_series.values)
+
+
+## LOAD SIMULATION RESULT
+@app.callback(Output('display-message', 'children'),
+              [Input('display-policy-button', 'n_clicks'), State("policy-id", "value")])
+def run_simulation(n_clicks, policy_id):
+    if n_clicks > 0:
+        children = list()
+        if policy_id is None:
+            children.append(html.Div("Please specify Policy ID"))
+            return children
+        policy_parameters = POLICY_DB.get(str(policy_id))
+        if not policy_parameters:
+            children.append(html.Div(
+                f"There is no metadata found for Policy ID {policy_id}. Please go to Policy Builder to create."))
+            return children
+
+        cloned_policy_parameters = dict(policy_parameters)
+        locations = cloned_policy_parameters.pop("asset_locations")
+        layers = cloned_policy_parameters.pop("protection_layers")
+        layers.sort(key=lambda x: x["payout_ratio"])
+        locations.sort(key=lambda x: x["longitude"])
+
+        children.append(format_dataframe(pandas.DataFrame([cloned_policy_parameters])))
+        children.append(format_dataframe(pandas.DataFrame(layers)))
+        children.append(format_dataframe(pandas.DataFrame(locations)))
+
+        policy_simulation_metadata = POLICY_PAYOUT_SIMULATION_DB.get(str(policy_id))
+        if not policy_simulation_metadata:
+            children.append(
+                html.Div(
+                    f"There is no simulation data found for Policy ID {policy_id}. Please go to Policy Builder to simulate."))
+            return children
+        payout_data = data_platform_helper.load_object_to_flat_file(str(policy_id), SIMULATION_RESULT_DATASTORE)
+        print(payout_data)
+
+        children.append(html.Div("Historical Payout", style={'display': 'inline-grid',"width":"100%"}))
+        children.append(dcc.Graph(figure=display_yearly_payout(payout_data)))
+        children.append(html.Div("Payout Histogram", style={'display': 'inline-grid',"width":"100%"}))
+        children.append(dcc.Graph(figure=display_payout_histogram(payout_data)))
+        children.append(html.Div("Burning cost", style={'display': 'inline-grid',"width":"100%"}))
+        children.append(dcc.Graph(figure=display_burning_cost(payout_data)))
+        return children
+
+    pass
+
 
 page_content_header = html.Div("Enter Policy ID to visualize Analysis")
 
@@ -113,6 +165,7 @@ def logout_dashboard(n_clicks):
 def go_to_policy_analysis(n_clicks):
     if n_clicks > 0:
         return '/success'
+
 
 # Create callbacks
 @app.callback(Output('ar_policy_builder_screen', 'pathname'), [Input('policy-screen-button', 'n_clicks')])

@@ -37,4 +37,13 @@ def simulate_earthquake(policy_parameters: dict, layers: list, locations: list):
                                                                           end_date=datetime.utcnow())
     print(len(earthquake_data))
     payouts = tools.compute_payouts(earthquake_data, policy)
+    payouts.event_data = earthquake_data
     return payouts
+from app_database_driver import *
+from app_user_dao  import *
+def setup_demo_app():
+    init_database()
+    upsert_user("user_001","password_001","email_001@abcxyz.com")
+    upsert_user("user_002","password_002","email_002@abcxyz.com")
+    upsert_user("user_003","password_003","email_003@abcxyz.com")
+

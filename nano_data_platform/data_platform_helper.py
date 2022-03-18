@@ -83,7 +83,7 @@ def get_data_platform_pickle_path (db_name) :
     return result
 
 def get_data_platform_flat_file_dir_path(db_name):
-    result = get_data_platform_pickle_db_dir () + "/" + db_name
+    result = get_data_platform_flat_file_dir () + "/" + db_name
     try:
         os.makedirs(result)
     except:

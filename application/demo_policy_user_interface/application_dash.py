@@ -1,4 +1,5 @@
 # index page
+import add_to_path
 from dash import html, dcc
 from dash.dependencies import Input, Output
 from flask_login import logout_user, current_user
@@ -69,4 +70,5 @@ def user_logout (input1) :
 
 
 if __name__ == '__main__' :
+
     app.run_server (debug = True, port = 2022)
