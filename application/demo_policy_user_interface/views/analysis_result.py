@@ -83,13 +83,13 @@ from plotly import express as px
 #### VISULAIZATION / STATS
 def display_yearly_payout(payout_object):
     if len(payout_object) == 0:
-        return html.Div("No relevant historical events for this policy. All simulated payout is zero")
+        return html.H6("No relevant historical events for this policy. All simulated payout is zero")
     return dcc.Graph(figure=px.bar(x=payout_object.index, y=payout_object.values))
 
 
 def display_payout_histogram(payout_object):
     if len(payout_object) == 0:
-        return html.Div("No relevant historical events for this policy. All simulated payout is zero")
+        return html.H6("No relevant historical events for this policy. All simulated payout is zero")
     return dcc.Graph(figure=px.histogram(x=payout_object.values, nbins=101, histnorm='probability density'))
 
 
