@@ -14,11 +14,11 @@ from application.demo_policy_user_interface.server import app
 warnings.filterwarnings("ignore")
 from nano_data_platform import data_platform_helper
 
-POLICY_DB = data_platform_helper.get_data_platform_pickle_db_connection(db_name="POLICY_METADATA.db", auto_dump=True)
-## WE USE POLICY IT AS METADATA STORE
-POLICY_PAYOUT_SIMULATION_DB = data_platform_helper.get_data_platform_pickle_db_connection(
-    db_name="POLICY_PAYOUT_SIMULATION.db", auto_dump=True)
-SIMULATION_RESULT_DATASTORE = "SIMULATION_RESULT"
+from application.demo_policy_user_interface import app_database_driver
+POLICY_PAYOUT_SIMULATION_DB = app_database_driver.POLICY_PAYOUT_SIMULATION_DB
+POLICY_DB = app_database_driver.POLICY_DB
+SIMULATION_RESULT_DATASTORE = app_database_driver.SIMULATION_RESULT_DATASTORE
+
 ##
 ENDPOINT = "/policy-simulation"
 pb_log_out = dcc.Location(id='pb_log_out', refresh=True)

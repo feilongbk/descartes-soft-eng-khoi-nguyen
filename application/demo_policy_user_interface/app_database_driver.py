@@ -30,6 +30,10 @@ def create_user_table():
 def init_database():
     create_user_table()
 
-
+POLICY_DB = data_platform_helper.get_data_platform_pickle_db_connection(db_name="POLICY_METADATA.db", auto_dump=True)
+## WE USE POLICY IT AS METADATA STORE
+POLICY_PAYOUT_SIMULATION_DB = data_platform_helper.get_data_platform_pickle_db_connection(
+    db_name="POLICY_PAYOUT_SIMULATION.db", auto_dump=True)
+SIMULATION_RESULT_DATASTORE = "SIMULATION_RESULT"
 if __name__ =="__main__":
     pass

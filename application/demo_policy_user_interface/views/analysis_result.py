@@ -16,11 +16,10 @@ from application.demo_policy_user_interface.server import app
 warnings.filterwarnings("ignore")
 from nano_data_platform import data_platform_helper
 
-POLICY_DB = data_platform_helper.get_data_platform_pickle_db_connection(db_name="POLICY_METADATA.db", auto_dump=True)
-## WE USE POLICY IT AS METADATA STORE
-POLICY_PAYOUT_SIMULATION_DB = data_platform_helper.get_data_platform_pickle_db_connection(
-    db_name="POLICY_PAYOUT_SIMULATION.db", auto_dump=True)
-SIMULATION_RESULT_DATASTORE = "SIMULATION_RESULT"
+from application.demo_policy_user_interface import app_database_driver
+POLICY_PAYOUT_SIMULATION_DB = app_database_driver.POLICY_PAYOUT_SIMULATION_DB
+POLICY_DB = app_database_driver.POLICY_DB
+SIMULATION_RESULT_DATASTORE = app_database_driver.SIMULATION_RESULT_DATASTORE
 ##
 ENDPOINT = "/analysis-result"
 ar_log_out = dcc.Location(id='ar_log_out', refresh=True)
@@ -83,18 +82,27 @@ from plotly import express as px
 
 #### VISULAIZATION / STATS
 def display_yearly_payout(payout_object):
-    return px.bar(x=payout_object.index, y=payout_object.values)
+    if len(payout_object) == 0:
+        return html.Div("No relevant historical events for this policy. All simulated payout is zero")
+    return dcc.Graph(figure=px.bar(x=payout_object.index, y=payout_object.values))
 
 
 def display_payout_histogram(payout_object):
-    return px.histogram(x=payout_object.values, nbins=101, histnorm='probability density')
+    if len(payout_object) == 0:
+        return html.Div("No relevant historical events for this policy. All simulated payout is zero")
+    return dcc.Graph(figure=px.histogram(x=payout_object.values, nbins=101, histnorm='probability density'))
 
 
 def display_burning_cost(payout_object):
-    burning_cost_series = {start_year: utils.tools.compute_burning_cost(payout_object, start_year, 2021) for start_year
+    if len(payout_object) == 0:
+        burning_cost_series = {start_year: 0.0 for
+                               start_year
+                               in range(1911, 2022)}
+    else:
+        burning_cost_series = {start_year: utils.tools.compute_burning_cost(payout_object, start_year, 2021) for start_year
                            in range(1911, 2022)}
     burning_cost_series = pandas.Series(burning_cost_series)
-    return px.line(x=burning_cost_series.index, y=burning_cost_series.values)
+    return dcc.Graph(figure=(px.line(x=burning_cost_series.index, y=burning_cost_series.values)))
 
 
 ## LOAD SIMULATION RESULT
@@ -132,11 +140,11 @@ def run_simulation(n_clicks, policy_id):
         print(payout_data)
 
         children.append(html.Div("Historical Payout", style={'display': 'inline-grid',"width":"100%"}))
-        children.append(dcc.Graph(figure=display_yearly_payout(payout_data)))
+        children.append(display_yearly_payout(payout_data))
         children.append(html.Div("Payout Histogram", style={'display': 'inline-grid',"width":"100%"}))
-        children.append(dcc.Graph(figure=display_payout_histogram(payout_data)))
+        children.append(display_payout_histogram(payout_data))
         children.append(html.Div("Burning cost", style={'display': 'inline-grid',"width":"100%"}))
-        children.append(dcc.Graph(figure=display_burning_cost(payout_data)))
+        children.append(display_burning_cost(payout_data))
         return children
 
     pass
