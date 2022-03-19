@@ -50,7 +50,7 @@ def compute_payouts (
     result = policy.compute_payout_multi_scenario (scenario_generator.get_data ())
     print(result)
     payout_series = result.apply (lambda x : x.scenario_payout)
-    payout_series.detailed_analysis = result
+    #payout_series.detailed_analysis = result
     return payout_series
 
 def compute_burning_cost (payouts: (dict, pandas.Series), start_year, end_year) ->float:
