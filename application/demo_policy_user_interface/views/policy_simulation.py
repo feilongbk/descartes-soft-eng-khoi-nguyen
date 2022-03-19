@@ -333,8 +333,6 @@ def run_simulation(n_clicks, policy_id, overwrite_simulation):
         simulation_metadata["status"] = "SUCCEEDED"
 
         data_platform_helper.dump_object_to_flat_file(result, str(policy_id), SIMULATION_RESULT_DATASTORE)
-        VISU = dcc.Graph(figure=px.bar(x=result.index, y=result.values))
-        # children.append(VISU)
         children.append(html.Br())
         children.append(html.Div("Done Simulation. Go to Analysis Result Screen to visualize the details"))
         return children
