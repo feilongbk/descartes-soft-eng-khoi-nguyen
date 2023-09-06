@@ -1,4 +1,4 @@
-
+import add_to_path
 from sqlalchemy.sql import select
 
 from werkzeug.security import generate_password_hash
