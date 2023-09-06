@@ -1,17 +1,30 @@
 import add_to_path
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select,table, column
 
 from werkzeug.security import generate_password_hash
 from application.demo_policy_user_interface.app_database_driver import *
 
 
-def insert_user(username, password, email):
+def insert_user_old(username, password, email):
     hashed_password = generate_password_hash(password, method='sha256')
-    ins = USER_TABLE_OBJECT.insert().values(
-        username=username, email=email, password=hashed_password)
+    #ins = USER_TABLE_OBJECT.insert().values(username=username, email=email, password=hashed_password)
+    ins = USER_TABLE_OBJECT.insert().values({'username' : username, 'email' : email, 'password' : hashed_password})
+    #ins = f'''INSERT INTO {USER_TABLE_OBJECT.name}  (username, email, password) VALUES ({username}, {email}, {hashed_password})'''
+    #print(ins)
     conn = DB_ENGINE.connect()
     conn.execute(ins)
+
     conn.close()
+
+def insert_user(username, password, email):
+        hashed_password = generate_password_hash(password, method='sha256')
+
+        conn = DB_ENGINE.connect()
+        conn.execute(table(USER_TABLE_OBJECT.name, column('username'), column('email'),
+                     column('password')).insert().values(
+            {'username': username, 'email': email, 'password': hashed_password}))
+        conn.commit()
+        conn.close()
 
 def update_user(username, password, email):
     hashed_password = generate_password_hash(password, method='sha256')

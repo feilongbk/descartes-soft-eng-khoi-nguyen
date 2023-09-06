@@ -43,7 +43,11 @@ def simulate_earthquake(policy_parameters: dict, layers: list, locations: list):
 from app_database_driver import *
 from app_user_dao  import *
 def setup_demo_app():
-    init_database()
+    try:
+        init_database()
+    except Exception as e:
+        print(e)
+        pass
     upsert_user("user_001","password_001","email_001@abcxyz.com")
     upsert_user("user_002","password_002","email_002@abcxyz.com")
     upsert_user("user_003","password_003","email_003@abcxyz.com")

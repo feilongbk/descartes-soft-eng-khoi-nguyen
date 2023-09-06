@@ -24,6 +24,7 @@ class DEMO_APP_USER(DB.Model):
 
 USER_TABLE_OBJECT = Table(USER_TABLE_NAME, DEMO_APP_USER.metadata)
 
+
 def create_user_table():
     DEMO_APP_USER.metadata.create_all(DB_ENGINE)
 
