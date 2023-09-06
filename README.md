@@ -14,7 +14,7 @@ Access should be granted to all members of the [descartes-underwriting group](ht
 
 ## NOTE
 I have written a small application, inspired by the test, to make the creation and analysis of policies easier.
-You can find access the application at [http://[35.198.191.123](http://34.76.197.173/):2022/](http://34.76.197.173:2022/) with following credentials:
+You can find access the application at (http://34.76.197.173:2022/) with following credentials:
 * user_001, password_001
 * user_002, password_002
 * user_003, password_003
